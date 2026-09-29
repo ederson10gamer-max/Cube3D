@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubo 3D Nativo</title>
+    <!-- Link externo relativo para a folha de estilo -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Painel de Telemetria e Debug em tempo real -->
+<header id="debug-panel">
+    <div class="debug-metric">FPS: <span id="debug-fps">0</span></div>
+    <div class="debug-metric">Rotação X: <span id="debug-rot-x">0°</span></div>
+    <div class="debug-metric">Rotação Y: <span id="debug-rot-y">0°</span></div>
+    <div class="debug-metric">Status: <span id="debug-status">Estático</span></div>
+</header>
+    <main class="cena-3d">
+        <!-- O objeto cubo que sofrerá a rotação global -->
+        <div class="cubo">
+            <article class="face frente">Frente</article>
+            <article class="face tras">Trás</article>
+            <article class="face direita">Direita</article>
+            <article class="face esquerda">Esquerda</article>
+            <article class="face topo">Topo</article>
+            <article class="face base">Base</article>
+        </div>
+    </main>
+
+    <section class="controles">
+        <br>
+        <p>Interação via JS: Mova o mouse na tela ou use o botão</p>
+        <button id="btn-auto-rotacao">Alternar Rotação Automática</button>
+    </section>
+
+    <!-- Source do script posicionado no final do body para garantir o parse do DOM -->
+    <script src="script.js"></script>
+</body>
+</html>

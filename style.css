@@ -1,0 +1,101 @@
+:root {
+    --tamanho-cubo: 200px;
+    --metade-cubo: 100px; /* Distância exata do centro até a face */
+    --velocidade-rotacao: 0.5deg;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #000000;
+    color: #4aff08;
+    font-family: sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+#debug-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.85);
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    color: #00ff00; /* Verde clássico de monitor fósforo */
+    z-index: 1000; /* Garante que fique acima do cubo */
+    pointer-events: none; /* Impede que o painel intercepte os cliques do mouse */
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.debug-metric span {
+    color: #fff;
+    font-weight: bold;
+}
+
+/* 1. Define o ambiente/cenário tridimensional */
+.cena-3d {
+    width: var(--tamanho-cubo);
+    height: var(--tamanho-cubo);
+    perspective: 800px; /* Muda o FOV/Perspectiva*/
+}
+
+/* 2. O objeto geométrico no espaço */
+.cubo {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d; /* ATENÇÃO: Mantém o contexto 3D para os filhos */
+    transform: rotateX(-20deg) rotateY(30deg); /* Posição angular inicial */
+}
+
+/* 3. Propriedades comuns a todas as faces */
+.face {
+    position: absolute;
+    width: var(--tamanho-cubo);
+    height: var(--tamanho-cubo);
+    border: 2px solid #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    background-color: rgba(255, 0, 0, 0.7); /* Cor semitransparente para ver a profundidade */
+    transition: background-color 0.5s;
+}
+
+/* 4. Mapeamento matemático de posicionamento das faces no espaço cartesiano */
+.frente   { transform: rotateY(0deg) translateZ(var(--metade-cubo)); }
+.tras     { transform: rotateY(180deg) translateZ(var(--metade-cubo)); }
+.direita  { transform: rotateY(90deg) translateZ(var(--metade-cubo)); }
+.esquerda { transform: rotateY(-90deg) translateZ(var(--metade-cubo)); }
+.topo     { transform: rotateX(90deg) translateZ(var(--metade-cubo)); }
+.base     { transform: rotateX(-90deg) translateZ(var(--metade-cubo)); }
+
+/* Feedback visual quando o JS interagir com o cubo */
+.cubo.ativo .face {
+    background-color: rgba(255, 255, 255, 0.7); /* Muda para laranja */
+}
+
+.controles {
+    margin-top: 40px;
+    text-align: center;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
