@@ -4,10 +4,13 @@ const hudFps = document.querySelector('#debug-fps');
 const hudRotX = document.querySelector('#debug-rot-x');
 const hudRotY = document.querySelector('#debug-rot-y');
 const hudStatus = document.querySelector('#debug-status');
+// Sincronizado para bater exatamente com o ID do botão no HTML
+const botao = document.querySelector('#btn-auto-rotate'); 
 
 // 2. Estados de Orientação Angular Globais
 let anguloX = -20;
 let anguloY = 30;
+let beRotate = false; // Estado que dita se a rotação automática está ativa
 
 // 3. Estados de Controle de Interação (Mouse e Touch)
 let isInteracting = false;
@@ -20,7 +23,7 @@ let framesAcumulados = 0;
 let tempoAcumulado = 0;
 
 /**
- * MOTOR DE LOOP DE RENDEREZAÇÃO
+ * MOTOR DE LOOP DE RENDERIZAÇÃO (Centralizador de Estado)
  */
 function cicloPrincipal(tempoAtual) {
     const deltaTime = tempoAtual - ultimoCarimboTempo;
@@ -35,13 +38,29 @@ function cicloPrincipal(tempoAtual) {
         tempoAcumulado = 0;
     }
 
+    // INTERAÇÃO AUTOMÁTICA: Incrementa os ângulos apenas se o botão permitir E o usuário não estiver arrastando
+    if (beRotate && !isInteracting) {
+        anguloY += 0.5; // Rotação automatica constante no eixo Y
+    }
+
+    // MUTAÇÃO VISUAL ÚNICA: O DOM é atualizado aqui uma vez por frame de forma otimizada
+    cubo.style.transform = `rotateX(${anguloX}deg) rotateY(${anguloY}deg)`;
+
+    // Atualização do HUD de Debug
     hudRotX.textContent = `${Math.round(anguloX)}°`;
     hudRotY.textContent = `${Math.round(anguloY)}°`;
-    hudStatus.textContent = isInteracting ? "Interagindo" : "Estático";
+    hudStatus.textContent = isInteracting ? "Interagindo" : (beRotate ? "Auto-Rodando" : "Estático");
 
     requestAnimationFrame(cicloPrincipal);
 }
 requestAnimationFrame(cicloPrincipal);
+
+/**
+ * INTERRUPTOR DA ROTAÇÃO AUTOMÁTICA
+ */
+botao.addEventListener('click', () => {
+    beRotate = !beRotate; // Inversão de estado lógico (Toggle)
+});
 
 /**
  * IMPLEMENTAÇÃO: MOUSE EVENTS (DESKTOP)
@@ -62,17 +81,13 @@ window.addEventListener('mousemove', (e) => {
  */
 window.addEventListener('touchstart', (e) => {
     isInteracting = true;
-    // Captura o ponto cartesiano do primeiro dedo que tocou a tela (índice 0)
     previousX = e.touches[0].clientX;
     previousY = e.touches[0].clientY;
 }, { passive: false });
 
 window.addEventListener('touchmove', (e) => {
     if (!isInteracting) return;
-    
-    // Previne que a tela do celular balance ou role enquanto o usuário arrasta o cubo
     e.preventDefault(); 
-    
     processarMovimento(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: false });
 
@@ -84,16 +99,14 @@ window.addEventListener('touchend', finalizarInteracao);
 window.addEventListener('touchcancel', finalizarInteracao);
 
 /**
- * Função Abstrata para calcular a variação de movimento (Delta) e aplicar no CSS
+ * FUNÇÃO ABSTRATA: Apenas calcula os dados matemáticos dos deltas
  */
 function processarMovimento(atualX, atualY) {
     const deltaX = atualX - previousX;
     const deltaY = atualY - previousY;
 
-    anguloY += deltaX * 0.4; // Sensibilidade
+    anguloY += deltaX * 0.4;
     anguloX -= deltaY * 0.4;
-
-    cubo.style.transform = `rotateX(${anguloX}deg) rotateY(${anguloY}deg)`;
 
     previousX = atualX;
     previousY = atualY;
@@ -112,5 +125,4 @@ window.addEventListener('keydown', (e) => {
         default: return;
     }
     e.preventDefault();
-    cubo.style.transform = `rotateX(${anguloX}deg) rotateY(${anguloY}deg)`;
 });
